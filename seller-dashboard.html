@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - Animal Science Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #2e7d32;
+        }
+
+        .btn-primary:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-secondary {
+            background: #1b5e20;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #0d4318;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-card h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff5722;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s;
+        }
+
+        .order-item:hover {
+            background: #f9f9f9;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-info {
+            flex-grow: 1;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+
+        .order-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-amount {
+            font-weight: 600;
+            color: #ff5722;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+
+        .order-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .complete-order-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .complete-order-btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+        }
+
+        .complete-order-btn:active {
+            transform: translateY(0);
+        }
+
+        .order-status-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex-grow: 1;
+        }
+
+        .activity-action {
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .order-amount {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>🐄 Seller Dashboard</h1>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-primary">Back to Store</a>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Dashboard Stats -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>📊 Total Orders</h3>
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">All time orders</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>💰 Total Revenue</h3>
+                <div class="stat-number">₱<span id="totalRevenue">0</span></div>
+                <div class="stat-label">Total earnings</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>📦 Pending Orders</h3>
+                <div class="stat-number" id="pendingOrders">0</div>
+                <div class="stat-label">Awaiting processing</div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('current-orders')">Current Orders</button>
+            <button class="tab-btn" onclick="switchTab('order-history')">Order History</button>
+            <button class="tab-btn" onclick="switchTab('activity')">Recent Activity</button>
+        </div>
+
+        <!-- Current Orders Tab -->
+        <div id="current-orders" class="tab-content active">
+            <h3 style="margin-bottom: 20px; color: #2e7d32;">Current Orders</h3>
+            <div id="currentOrdersList">
+                <!-- Current orders will be populated here -->
+            </div>
+        </div>
+
+        <!-- Order History Tab -->
+        <div id="order-history" class="tab-content">
+            <h3 style="margin-bottom: 20px; color: #2e7d32;">Order History</h3>
+            <div id="orderHistoryList">
+                <!-- Order history will be populated here -->
+            </div>
+        </div>
+
+        <!-- Activity Tab -->
+        <div id="activity" class="tab-content">
+            <h3 style="margin-bottom: 20px; color: #2e7d32;">Recent Activity</h3>
+            <div id="activityList">
+                <!-- Activity will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal" id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div class="modal-content" style="background: white; max-width: 400px; margin: 20% auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); overflow: hidden;">
+            <div class="modal-header" style="background: #2e7d32; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3>Confirm Logout</h3>
+                <button onclick="closeLogoutModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <h4 style="margin-bottom: 15px; color: #333;">Are you sure you want to logout?</h4>
+                <p style="color: #666; margin-bottom: 25px;">You will be redirected to the main store.</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="confirmLogout()" class="btn" style="background: #f44336; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Yes, Logout</button>
+                    <button onclick="closeLogoutModal()" class="btn" style="background: #757575; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Order Confirmation Modal -->
+    <div class="modal" id="completeOrderModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div class="modal-content" style="background: white; max-width: 400px; margin: 20% auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); overflow: hidden;">
+            <div class="modal-header" style="background: #2e7d32; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3>Complete Order</h3>
+                <button onclick="closeCompleteOrderModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
+                <h4 style="margin-bottom: 15px; color: #333;">Do you want to complete this order?</h4>
+                <p style="color: #666; margin-bottom: 25px;" id="completeOrderDetails">Order will be moved to order history.</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="confirmCompleteOrder()" class="btn" style="background: #4caf50; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Yes, Complete</button>
+                    <button onclick="closeCompleteOrderModal()" class="btn" style="background: #757575; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic order storage - synced with actual store orders
+        let allOrders = [];
+        let orderIdCounter = 1;
+
+        // Load orders from localStorage or initialize with empty data
+        function loadOrders() {
+            const storedOrders = localStorage.getItem('storeOrders');
+            if (storedOrders) {
+                allOrders = JSON.parse(storedOrders);
+                // Set counter based on existing real orders
+                const maxId = allOrders.length > 0 ? 
+                    Math.max(...allOrders.map(order => parseInt(order.id.split('-')[2]))) : 0;
+                orderIdCounter = maxId + 1;
+            } else {
+                // Initialize with empty orders - only real orders will show
+                allOrders = [];
+                orderIdCounter = 1;
+                localStorage.setItem('storeOrders', JSON.stringify(allOrders));
+            }
+        }
+
+        // Function to clear all data (manual only)
+        function clearSampleData() {
+            localStorage.removeItem('storeOrders');
+            localStorage.removeItem('storeActivity');
+            allOrders = [];
+            orderIdCounter = 1;
+            localStorage.setItem('storeOrders', JSON.stringify(allOrders));
+            
+            // Refresh dashboard to show cleared state
+            updateDashboardStats();
+            renderCurrentOrders();
+            renderOrderHistory();
+            renderActivity();
+            
+            showNotification('All data cleared - dashboard reset to clean state');
+            console.log('All data cleared - use clearSampleData() to clear again if needed');
+        }
+
+        // Add new order from checkout
+        function addNewOrder(orderData) {
+            const newOrder = {
+                id: `ORD-2025-${String(orderIdCounter).padStart(3, '0')}`,
+                customer: orderData.name,
+                items: orderData.items.map(item => item.name),
+                amount: orderData.total,
+                status: 'pending',
+                date: new Date().toLocaleDateString('en-CA'),
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                })
+            };
+            
+            allOrders.unshift(newOrder); // Add to beginning of array
+            orderIdCounter++;
+            
+            // Save to localStorage
+            localStorage.setItem('storeOrders', JSON.stringify(allOrders));
+            
+            // Add activity
+            addActivity('New order received', `Order #${newOrder.id} from ${newOrder.customer}`, 'just now', '📦');
+            
+            // Refresh dashboard
+            updateDashboardStats();
+            renderCurrentOrders();
+            renderOrderHistory();
+            
+            // Show notification
+            showNotification(`New order received: ${newOrder.id}`);
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                background: ${type === 'success' ? '#2e7d32' : '#f44336'};
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 16px;
+                font-weight: 600;
+                text-align: center;
+                min-width: 250px;
+                opacity: 0;
+                transition: all 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 100);
+            
+            // Auto remove after 2.5 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 2500);
+        }
+
+        // Function to change order status (for testing/demo purposes)
+        function changeOrderStatus(orderId, newStatus) {
+            const orderIndex = allOrders.findIndex(order => order.id === orderId);
+            if (orderIndex !== -1) {
+                allOrders[orderIndex].status = newStatus;
+                localStorage.setItem('storeOrders', JSON.stringify(allOrders));
+                
+                // Show toast notification
+                if (newStatus === 'completed') {
+                    showToast('Order has been completed', 'success');
+                }
+                
+                // Add activity
+                addActivity('Order status updated', `Order #${orderId} marked as ${newStatus}`, 'just now', newStatus === 'completed' ? '✅' : '📝');
+                
+                // Refresh dashboard
+                updateDashboardStats();
+                renderCurrentOrders();
+                renderOrderHistory();
+                renderActivity();
+            }
+        }
+
+        // Dynamic activity tracking
+        let recentActivity = [];
+
+        // Load activity from localStorage
+        function loadActivity() {
+            const storedActivity = localStorage.getItem('storeActivity');
+            if (storedActivity) {
+                recentActivity = JSON.parse(storedActivity);
+            } else {
+                // Initialize with sample activity
+                recentActivity = [
+                    { action: 'Dashboard initialized', details: 'Seller dashboard loaded successfully', time: 'just now', icon: '🎛️' },
+                    { action: 'System ready', details: 'Real-time order tracking active', time: 'just now', icon: '✅' }
+                ];
+                localStorage.setItem('storeActivity', JSON.stringify(recentActivity));
+            }
+        }
+
+        // Add new activity
+        function addActivity(action, details, time, icon) {
+            const newActivity = { action, details, time, icon };
+            recentActivity.unshift(newActivity);
+            
+            // Keep only last 10 activities
+            if (recentActivity.length > 10) {
+                recentActivity = recentActivity.slice(0, 10);
+            }
+            
+            localStorage.setItem('storeActivity', JSON.stringify(recentActivity));
+            renderActivity();
+        }
+
+        // Listen for new orders from main store
+        function setupRealTimeListener() {
+            // Listen for storage changes (new orders)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'newOrder' && e.newValue) {
+                    const orderData = JSON.parse(e.newValue);
+                    addNewOrder(orderData);
+                    // Clear the trigger
+                    localStorage.removeItem('newOrder');
+                }
+            });
+
+            // Also check periodically for same-tab updates
+            setInterval(() => {
+                const newOrderData = localStorage.getItem('newOrder');
+                if (newOrderData) {
+                    const orderData = JSON.parse(newOrderData);
+                    addNewOrder(orderData);
+                    localStorage.removeItem('newOrder');
+                }
+            }, 1000);
+        }
+
+        // Notification system for dashboard
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                background: #2e7d32;
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 16px;
+                font-weight: 600;
+                text-align: center;
+                min-width: 250px;
+                opacity: 0;
+                transition: all 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            loadOrders();
+            loadActivity();
+            setupRealTimeListener();
+            updateDashboardStats();
+            renderCurrentOrders();
+            renderOrderHistory();
+            renderActivity();
+            
+            addActivity('Dashboard loaded', 'Seller dashboard initialized successfully', 'just now', '🎛️');
+        }
+
+        function updateDashboardStats() {
+            const totalOrders = allOrders.length;
+            const totalRevenue = allOrders
+                .filter(order => order.status !== 'cancelled')
+                .reduce((sum, order) => sum + order.amount, 0);
+            const pendingOrders = allOrders.filter(order => order.status === 'pending' || order.status === 'processing').length;
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString();
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+        }
+
+        function renderCurrentOrders() {
+            const currentOrders = allOrders.filter(order => order.status === 'pending' || order.status === 'processing');
+            const container = document.getElementById('currentOrdersList');
+
+            if (currentOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>No current orders</h3>
+                        <p>Waiting for new orders from customers!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentOrders.map(order => `
+                <div class="order-item">
+                    <div class="order-info">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-details">
+                            <strong>${order.customer}</strong> • ${order.items.join(', ')}
+                            <br>
+                            ${order.date} at ${order.time}
+                        </div>
+                    </div>
+                    <div class="order-amount">₱${order.amount.toLocaleString()}</div>
+                    <div class="order-status-container">
+                        <div class="order-status status-${order.status}">${order.status}</div>
+                        <button class="complete-order-btn" onclick="showCompleteOrderModal('${order.id}')" title="Mark as completed">
+                            ✅ Complete Order
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderOrderHistory() {
+            const completedOrders = allOrders.filter(order => order.status === 'completed' || order.status === 'cancelled');
+            const container = document.getElementById('orderHistoryList');
+
+            if (completedOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📜</div>
+                        <h3>No order history</h3>
+                        <p>Completed orders will appear here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = completedOrders.map(order => `
+                <div class="order-item">
+                    <div class="order-info">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-details">
+                            <strong>${order.customer}</strong> • ${order.items.join(', ')}
+                            <br>
+                            ${order.date} at ${order.time}
+                        </div>
+                    </div>
+                    <div class="order-amount">₱${order.amount.toLocaleString()}</div>
+                    <div class="order-status status-${order.status}">${order.status}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderActivity() {
+            const container = document.getElementById('activityList');
+
+            if (recentActivity.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <h3>No recent activity</h3>
+                        <p>Activity will appear here as it happens.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recentActivity.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">${activity.icon}</div>
+                    <div class="activity-content">
+                        <div class="activity-action">${activity.action}</div>
+                        <div class="activity-details">${activity.details}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function logout() {
+            document.getElementById('logoutModal').style.display = 'block';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function confirmLogout() {
+            // Clear any stored login data
+            localStorage.removeItem('sellerLoggedIn');
+            localStorage.removeItem('sellerUsername');
+            
+            // Redirect to main store
+            window.location.href = 'index.html';
+        }
+
+        // Complete order modal functions
+        let orderToComplete = null;
+
+        function showCompleteOrderModal(orderId) {
+            orderToComplete = orderId;
+            const order = allOrders.find(o => o.id === orderId);
+            if (order) {
+                document.getElementById('completeOrderDetails').textContent = 
+                    `Order ${order.id} from ${order.customer} will be marked as completed and moved to order history.`;
+            }
+            document.getElementById('completeOrderModal').style.display = 'block';
+        }
+
+        function closeCompleteOrderModal() {
+            document.getElementById('completeOrderModal').style.display = 'none';
+            orderToComplete = null;
+        }
+
+        function confirmCompleteOrder() {
+            if (orderToComplete) {
+                changeOrderStatus(orderToComplete, 'completed');
+                closeCompleteOrderModal();
+            }
+        }
+
+        // Check if user is logged in (basic check)
+        function checkAuth() {
+            // In a real app, you'd verify the session/token here
+            const isLoggedIn = localStorage.getItem('sellerLoggedIn') === 'true';
+            
+            if (!isLoggedIn) {
+                alert('Please login first to access the seller dashboard.');
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkAuth()) {
+                // Load existing data from localStorage (persistent)
+                initializeDashboard();
+                
+                // Log welcome message to console
+                setTimeout(() => {
+                    console.log('Dashboard loaded - Real-time monitoring active!');
+                }, 1000);
+                
+                // Make functions available in console for testing
+                window.clearSampleData = clearSampleData;
+                window.changeOrderStatus = changeOrderStatus;
+                
+                console.log('Seller Dashboard loaded. Available commands:');
+                console.log('- clearSampleData() - Clear all sample/test data');
+                console.log('- changeOrderStatus(orderId, status) - Change order status (pending/processing/completed/cancelled)');
+            }
+        });
+    </script>
+</body>
+</html>
